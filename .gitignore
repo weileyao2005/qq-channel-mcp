@@ -1,0 +1,25 @@
+# 本地凭证与数据
+config.json
+profile.json
+feeds.db
+feeds.db-wal
+feeds.db-shm
+*.log
+sync.log
+daemon.log
+digest.log
+
+# 缓存与导出
+__pycache__/
+*.pyc
+*.pyo
+*.json
+!config.json.example
+!package.json
+!server.json
+
+# 系统
+.DS_Store
+Thumbs.db
+.venv/
+venv/
