@@ -82,7 +82,8 @@ cp config.json.example config.json
 
 - 所有数据存储在本地 SQLite (`feeds.db`)
 - 登录凭证仅保存在本地 `config.json`
-- 不上传任何数据到第三方
+- **MCP server 本身不上传任何数据**
+- 可选的每日精选脚本（`daily_digest.py` / `daemon.py`）会把帖子内容（昵称、正文、互动数）和兴趣设置发送到 DeepSeek API 用于分类；不需要此功能就不要运行这两个脚本
 - 项目代码不含任何用户凭证
 
 ### 免责声明
@@ -166,7 +167,8 @@ cp config.json.example config.json
 
 - All data is stored locally in SQLite (`feeds.db`)
 - Login credentials are kept only in local `config.json`
-- No data is uploaded to third parties
+- **The MCP server itself uploads nothing**
+- The optional digest scripts (`daily_digest.py` / `daemon.py`) send post content (nicknames, text, interaction counts) and your interest settings to the DeepSeek API for classification; skip those scripts if you do not want that
 - The codebase contains no user credentials
 
 ### Disclaimer

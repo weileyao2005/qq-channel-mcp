@@ -4,6 +4,7 @@ QQ频道 Web API 客户端
 - 所有接口均为 pd.qq.com 的 JSON over HTTPS
 """
 import json
+import os
 import time
 import gzip
 import ssl
@@ -47,13 +48,17 @@ def _b64decode(s):
 
 
 class QQChannelClient:
-    def __init__(self, cookie: str = "", guild_id: str = "", guild_number: str = ""):
+    def __init__(self, cookie: str = "", guild_id: str = "", guild_number: str = "", post_channel_id: str = ""):
         self.cookie = cookie.strip()
         self.guild_id = guild_id
         self.guild_number = guild_number
+        # 帖子广场等主版块 ID，优先用配置；为空时使用 qq_feeds 传入的默认
+        self.post_channel_id = post_channel_id
         self.ctx = ssl.create_default_context()
-        self.ctx.check_hostname = False
-        self.ctx.verify_mode = ssl.CERT_NONE
+        if os.environ.get("QQ_MCP_INSECURE_TLS") == "1":
+            # 仅在本机存在 TLS 拦截代理时使用，会降低安全性
+            self.ctx.check_hostname = False
+            self.ctx.verify_mode = ssl.CERT_NONE
         self._p_skey = self._extract("p_skey")
         self._uuid = self._extract("uuid")
 
@@ -256,7 +261,7 @@ class QQChannelClient:
         """按昵称或用户ID过滤某人的帖子（翻时间线实现）"""
         import time as _t
         since = _t.time() - days * 86400 if days > 0 else None
-        feeds = self.get_timeline_feeds("635029104", since_ts=since, limit=limit, max_pages=max_pages)
+        feeds = self.get_timeline_feeds(self.post_channel_id or "635029104", since_ts=since, limit=limit, max_pages=max_pages)
         kw = (keyword or "").strip()
         if not kw:
             return feeds

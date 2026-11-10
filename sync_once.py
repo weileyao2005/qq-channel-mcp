@@ -51,7 +51,7 @@ def main():
     args = ap.parse_args()
 
     cfg = load_cfg()
-    c = QQChannelClient(cfg["cookie"], cfg["guild_id"], cfg["guild_number"])
+    c = QQChannelClient(cfg["cookie"], cfg["guild_id"], cfg["guild_number"], cfg.get("post_channel_id", ""))
 
     last = cache.get_state("last_sync_ts")
     now = int(time.time())
@@ -69,7 +69,7 @@ def main():
     log(f"开始同步（{mode}），since={datetime.fromtimestamp(since):%Y-%m-%d %H:%M}")
 
     try:
-        feeds = c.get_timeline_feeds("635029104", since_ts=since, limit=8000, max_pages=600)
+        feeds = c.get_timeline_feeds(c.post_channel_id or "635029104", since_ts=since, limit=8000, max_pages=600)
     except Exception as e:
         msg = str(e)
         if "登录态" in msg or "10006" in msg:

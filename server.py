@@ -35,6 +35,7 @@ def get_client():
         cookie=cfg.get("cookie", ""),
         guild_id=cfg.get("guild_id", ""),
         guild_number=cfg.get("guild_number", ""),
+        post_channel_id=cfg.get("post_channel_id", ""),
     )
 
 
@@ -144,7 +145,7 @@ def qq_feeds(days: float = 1, limit: int = 50, channel_id: str = "", sort: str =
     Args:
         days: 回溯天数（0.5=12小时，3=三天）
         limit: 最多返回条数
-        channel_id: 版块ID，留空=帖子广场(635029104)
+        channel_id: 版块ID，留空=配置里的 post_channel_id（默认 635029104）
         sort: time=按发布时间（默认，可回溯任意日期） / hot=推荐流
     """
     try:
@@ -153,7 +154,7 @@ def qq_feeds(days: float = 1, limit: int = 50, channel_id: str = "", sort: str =
         if sort == "hot":
             feeds = c.get_square_feeds(since_ts=since, limit=limit)
         else:
-            cid = channel_id or "635029104"
+            cid = channel_id or c.post_channel_id or "635029104"
             feeds = c.get_timeline_feeds(cid, since_ts=since, limit=limit)
         if not feeds:
             return "没有拉到帖子（可能超出可回溯范围或版块为空）"
@@ -177,7 +178,7 @@ def qq_sync(days: float = 2, max_pages: int = 300) -> str:
     try:
         c = get_client()
         since = time.time() - days * 86400
-        feeds = c.get_timeline_feeds("635029104", since_ts=since, limit=max_pages * 10, max_pages=max_pages)
+        feeds = c.get_timeline_feeds(c.post_channel_id or "635029104", since_ts=since, limit=max_pages * 10, max_pages=max_pages)
         n = cache.upsert_feeds(feeds)
         st = cache.stats()
         return (f"同步完成：拉到 {len(feeds)} 条，写入 {n} 条\n"

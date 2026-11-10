@@ -18,10 +18,16 @@ sys.path.insert(0, BASE)
 import cache  # noqa: E402
 import profile  # noqa: E402
 
-KEY = os.environ.get("ANTHROPIC_AUTH_TOKEN") or os.environ.get("LLM_API_KEY")
+# 只接受专用 DeepSeek 密钥，绝不回退到 ANTHROPIC_AUTH_TOKEN，
+# 否则其他用户运行本脚本会把 Anthropic 令牌发给 DeepSeek。
+KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 URL = "https://api.deepseek.com/v1/chat/completions"
-CTX = ssl.create_default_context(); CTX.check_hostname = False; CTX.verify_mode = ssl.CERT_NONE
-OUT_DIR = r"e:\Pycharm_Projects\Daily_usage\QQ频道MCP\精选"
+CTX = ssl.create_default_context()
+if os.environ.get("QQ_MCP_INSECURE_TLS") == "1":
+    # 仅在本机存在 TLS 拦截代理时使用，会降低安全性
+    CTX.check_hostname = False
+    CTX.verify_mode = ssl.CERT_NONE
+OUT_DIR = os.environ.get("QQ_DIGEST_DIR") or os.path.join(BASE, "digest")
 LOG = os.path.join(BASE, "digest.log")
 MODEL = "deepseek-chat"
 
@@ -83,6 +89,9 @@ def build_prompt(rows):
 
 
 def classify_new(limit=3000, batch_size=700):
+    if not KEY:
+        log("未设置 DEEPSEEK_API_KEY，跳过 AI 分类")
+        return 0
     rows = cache.unclassified(limit)
     if not rows:
         log("没有待分类的新帖")
