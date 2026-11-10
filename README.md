@@ -45,7 +45,7 @@
 ### 安装
 
 ```bash
-git clone https://github.com/YOUR_NAME/qq-channel-mcp.git
+git clone https://github.com/weileyao2005/qq-channel-mcp.git
 cd qq-channel-mcp
 pip install -r requirements.txt
 ```
@@ -129,7 +129,7 @@ Commenting and publishing require browser automation (see [SECURITY.md](SECURITY
 ### Installation
 
 ```bash
-git clone https://github.com/YOUR_NAME/qq-channel-mcp.git
+git clone https://github.com/weileyao2005/qq-channel-mcp.git
 cd qq-channel-mcp
 pip install -r requirements.txt
 ```
